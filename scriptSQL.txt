@@ -1,0 +1,62 @@
+CREATE TABLE Администраторы (
+    IDАдминистратора INT IDENTITY(1,1) PRIMARY KEY,
+    Логин NVARCHAR(50) UNIQUE NOT NULL,
+    Пароль NVARCHAR(255) NOT NULL,
+    ФИО NVARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Кладовщики (
+    IDКладовщика INT IDENTITY(1,1) PRIMARY KEY,
+    Логин NVARCHAR(50) UNIQUE NOT NULL,
+    Пароль NVARCHAR(255) NOT NULL,
+    ФИО NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Рабочие (
+    IDРабочего INT IDENTITY(1,1) PRIMARY KEY,
+    Логин NVARCHAR(50) UNIQUE NOT NULL,
+    Пароль NVARCHAR(255) NOT NULL,
+    ФИО NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE МестаХранения (
+    IDМеста INT IDENTITY(1,1) PRIMARY KEY,
+    Цех NVARCHAR(100) NOT NULL,
+    Шкаф NVARCHAR(50) NOT NULL,
+    IDКладовщика INT NULL FOREIGN KEY REFERENCES Кладовщики(IDКладовщика)
+);
+
+CREATE TABLE Инструменты (
+    IDИнструмента INT IDENTITY(1,1) PRIMARY KEY,
+    Артикул NVARCHAR(100) UNIQUE NOT NULL,
+    Наименование NVARCHAR(255) NOT NULL,
+    Наличие BIT NOT NULL DEFAULT 1,
+    ДатаПриемки DATE NOT NULL DEFAULT GETDATE(),
+    ДатаСписания DATE NULL,
+    IDМеста INT NOT NULL FOREIGN KEY REFERENCES МестаХранения(IDМеста)
+);
+
+CREATE TABLE ВыдачаИнструмента (
+    IDВыдачи INT IDENTITY(1,1) PRIMARY KEY,
+    IDИнструмента INT NOT NULL FOREIGN KEY REFERENCES Инструменты(IDИнструмента),
+    IDРабочего INT NOT NULL FOREIGN KEY REFERENCES Рабочие(IDРабочего),
+    IDКладовщика INT NOT NULL FOREIGN KEY REFERENCES Кладовщики(IDКладовщика),
+    ДатаВыдачи DATETIME NOT NULL DEFAULT GETDATE(),
+    ДатаВозврата DATETIME NULL
+);
+
+INSERT INTO Администраторы (Логин, Пароль, ФИО) 
+VALUES ('admin', 'admin123', 'Кузнецов Дмитрий Александрович');
+
+INSERT INTO Кладовщики (Логин, Пароль, ФИО) 
+VALUES ('storekeeper1', 'pass123', 'Иванов Петр Сидорович');
+
+INSERT INTO Рабочие (Логин, Пароль, ФИО) 
+VALUES ('worker1', 'pass123', 'Сидоров Алексей Иванович');
+
+INSERT INTO МестаХранения (Цех, Шкаф, IDКладовщика) 
+VALUES ('Цех №1', 'Шкаф №1', 1);
+
+INSERT INTO Инструменты (Артикул, Наименование, IDМеста) 
+VALUES ('ART001', 'Молоток слесарный', 1),
+       ('ART002', 'Отвертка крестовая', 1);
